@@ -1,14 +1,9 @@
 import fetch from 'node-fetch';
-import { Client, GatewayIntentBits } from 'discord.js';
 
 // ---------- CONFIG ----------
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN; // Add via Railway secrets
-const CHANNEL_ID = process.env.CHANNEL_ID;       // Discord channel to post
+const WEBHOOK_URL = process.env.WEBHOOK_URL; // Add via Railway secrets
 const TRACK_XP_URL = "https://mainserver.serv00.net/games/MotorWars2/track_xp.php";
 const DAILY_ARCHIVE_URL = "https://mainserver.serv00.net/games/MotorWars2/reports/daily_archive.json";
-
-// Create Discord client
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // ---------- UTILITY ----------
 async function fetchJson(url) {
@@ -20,7 +15,7 @@ async function fetchJson(url) {
 // ---------- MAIN FUNCTION ----------
 async function postDailyLeaderboard() {
   try {
-    // 1️⃣ Trigger the PHP script to finalize XP
+    // 1️⃣ Trigger PHP to finalize XP
     await fetch(TRACK_XP_URL);
     console.log("track_xp.php executed successfully");
 
@@ -35,30 +30,30 @@ async function postDailyLeaderboard() {
 
     const gains = archive[today];
 
-    // 3️⃣ Build leaderboard string
+    // 3️⃣ Build leaderboard string (top 10)
     const sortedPlayers = Object.entries(gains)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 10); // top 10
+      .slice(0, 10);
 
     let leaderboard = `**MotorWars2 Daily XP Leaderboard (${today})**\n\n`;
     sortedPlayers.forEach(([player, xp], i) => {
       leaderboard += `**${i + 1}. ${player}** — ${xp.toLocaleString()} XP\n`;
     });
 
-    // 4️⃣ Post to Discord
-    const channel = await client.channels.fetch(CHANNEL_ID);
-    await channel.send(leaderboard);
-    console.log("Leaderboard posted to Discord");
+    // 4️⃣ Send to Discord webhook
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: leaderboard })
+    });
+
+    if (!response.ok) throw new Error(`Webhook failed: ${response.status}`);
+    console.log("Leaderboard posted via webhook");
 
   } catch (err) {
     console.error("Error posting leaderboard:", err);
   }
 }
 
-// ---------- LOGIN & RUN ----------
-client.once('ready', () => {
-  console.log(`Logged in as ${client.user.tag}`);
-  postDailyLeaderboard();
-});
-
-client.login(DISCORD_TOKEN);
+// ---------- RUN ----------
+postDailyLeaderboard();
