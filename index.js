@@ -1,11 +1,11 @@
 import fetch from 'node-fetch';
 
 // ---------- CONFIG ----------
-const WEBHOOK_URL = process.env.WEBHOOK_URL; // Add via Railway secrets
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
 const TRACK_XP_URL = "https://mainserver.serv00.net/games/MotorWars2/track_xp.php";
 const DAILY_ARCHIVE_URL = "https://mainserver.serv00.net/games/MotorWars2/reports/daily_archive.json";
 
-// ---------- UTILITY ----------
+// ---------- HELPER ----------
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
