@@ -1,0 +1,12 @@
+{
+  "name": "motorwars-xp-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.1",
+    "discord.js": "^14.11.0"
+  }
+}
