@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 // ---------- CONFIG ----------
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
 const TRACK_XP_URL = "https://mainserver.serv00.net/games/MotorWars2/track_xp.php";
-const DAILY_ARCHIVE_URL = "https://mainserver.serv00.net/games/MotorWars2/reports/daily_archive.json";
+const DAILY_ARCHIVE_URL = "https://mainserver.serv00.net/games/MotorWars2/reports/daily.json";
 
 // ---------- HELPER ----------
 async function fetchJson(url) {
