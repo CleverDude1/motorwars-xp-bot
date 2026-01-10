@@ -22,13 +22,13 @@ async function postDailyLeaderboard() {
     // 2️⃣ Fetch daily archive
     const archive = await fetchJson(DAILY_ARCHIVE_URL);
 
-    const today = new Date().toISOString().split('T')[0];
-    if (!archive[today]) {
+    const today = archive.date;
+    if (!archive.gains || Object.keys(archive.gains).length === 0) {
       console.log("No XP data for today yet");
       return;
     }
 
-    const gains = archive[today];
+    const gains = archive.gains;
 
     // 3️⃣ Build leaderboard string (UNLIMITED)
     const sortedPlayers = Object.entries(gains)
