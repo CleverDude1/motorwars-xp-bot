@@ -22,22 +22,26 @@ async function postDailyLeaderboard() {
     // 2️⃣ Fetch daily archive
     const archive = await fetchJson(DAILY_ARCHIVE_URL);
 
-    const today = archive.date;
-    if (!archive.gains || Object.keys(archive.gains).length === 0) {
+    const today = new Date().toISOString().split('T')[0];
+    if (!archive[today]) {
       console.log("No XP data for today yet");
       return;
     }
 
-    const gains = archive.gains;
+    const gains = archive[today];
 
-    // 3️⃣ Build leaderboard string (top 10)
+    // 3️⃣ Build leaderboard string (UNLIMITED)
     const sortedPlayers = Object.entries(gains)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
+      .sort((a, b) => b[1] - a[1]);
 
     let leaderboard = `**MotorWars2 Daily XP Leaderboard (${today})**\n\n`;
     sortedPlayers.forEach(([player, xp], i) => {
-      leaderboard += `**${i + 1}. ${player}** — ${xp.toLocaleString()} XP\n`;
+      let medal = '';
+      if (i === 0) medal = '🥇 ';
+      else if (i === 1) medal = '🥈 ';
+      else if (i === 2) medal = '🥉 ';
+
+      leaderboard += `**${i + 1}. ${medal}${player}** — ${xp.toLocaleString()} XP\n`;
     });
 
     // 4️⃣ Send to Discord webhook
